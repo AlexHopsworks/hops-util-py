@@ -19,10 +19,7 @@ import six
 
 from hops.exceptions import RestAPIError
 
-from hops import constants
-from hops import devices
-from hops import util
-from hops import hdfs
+from hops import constants, devices, util, hdfs
 
 logger_fd = None
 
@@ -456,30 +453,31 @@ def _attach_experiment_xattr(app_id, run_id, json_data, xattr):
     else:
         return response_object
 
-def _attach_model_link_xattr(ml_id, model):
+def _attach_model_link_xattr(ml_id, model, project=None):
     """
     Utility method for putting JSON data into elastic search
 
     Args:
+        :ml_id: the id of the model
+        :model: the name of the model
         :project: the project of the user/app
-        :appid: the YARN appid
-        :elastic_id: the id in elastic
-        :json_data: the data to put
 
     Returns:
         None
 
     """
+    project_id = hdfs.project_id(project)
+    
     resource_url = constants.DELIMITERS.SLASH_DELIMITER + \
                    constants.REST_CONFIG.HOPSWORKS_REST_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
                    constants.REST_CONFIG.HOPSWORKS_PROJECT_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
-                   hdfs.project_id() + constants.DELIMITERS.SLASH_DELIMITER + \
+                   project_id + constants.DELIMITERS.SLASH_DELIMITER + \
                    constants.REST_CONFIG.HOPSWORKS_EXPERIMENTS_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
                    ml_id + "?model=" + model + '&xattr=CREATE'
 
     resp = util.send_request('PUT', resource_url)
 
-def _attach_model_xattr(ml_id, json_data):
+def _attach_model_xattr(ml_id, json_data, project=None):
     """
     Utility method for putting JSON data into elastic search
 
@@ -493,11 +491,12 @@ def _attach_model_xattr(ml_id, json_data):
         None
 
     """
+    project_id = hdfs.project_id(project)
     headers = {'Content-type': 'application/json'}
     resource_url = constants.DELIMITERS.SLASH_DELIMITER + \
                    constants.REST_CONFIG.HOPSWORKS_REST_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
                    constants.REST_CONFIG.HOPSWORKS_PROJECT_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
-                   hdfs.project_id() + constants.DELIMITERS.SLASH_DELIMITER + \
+                   project_id + constants.DELIMITERS.SLASH_DELIMITER + \
                    constants.REST_CONFIG.HOPSWORKS_MODELS_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
                    ml_id
 

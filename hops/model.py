@@ -104,7 +104,8 @@ def get_model(name, version):
     raise ModelNotFound("No model with name: {} and version {} could be found".format(name, version))
 
 
-def export(model_path, model_name, model_version=None, overwrite=False, metrics=None, description=None, synchronous=True, synchronous_timeout=120):
+def export(model_path, model_name, model_version=None, overwrite=False, metrics=None, description=None, \
+           synchronous=True, synchronous_timeout=120, project=None):
     """
     Copies a trained model to the Models directory in the project and creates the directory structure of:
 
@@ -140,12 +141,13 @@ def export(model_path, model_name, model_version=None, overwrite=False, metrics=
         :description: description about the model
         :synchronous: whether to synchronously wait for the model to be indexed in the models rest endpoint
         :synchronous_timeout: max timeout in seconds for waiting for the model to be indexed
+        :project: the name of the project where the model should be saved to (default: current project). Note, the project must share its 'models' dataset and make it writeable for this client.
 
     Returns:
         The path to where the model was exported
 
     Raises:
-        :ValueError: if there was an error with th of the model due to invalid user input
+        :ValueError: if there was an error with the model due to invalid user input
         :ModelNotFound: if the model was not found
     """
 
@@ -155,16 +157,19 @@ def export(model_path, model_name, model_version=None, overwrite=False, metrics=
     if not isinstance(model_path, string_types):
         model_path = model_path.decode()
 
+    project_path = hdfs.project_path(project)
+    
+    local_model_path = model_path        
+    hdfs_model_path = project_path + constants.DELIMITERS.SLASH_DELIMITER + model_path
+        
     if not description:
         description = 'A collection of models for ' + model_name
 
-    project_path = hdfs.project_path()
+    assert hdfs.exists(project_path + constants.DELIMITERS.SLASH_DELIMITER + constants.MODEL_SERVING.MODELS_DATASET), "Problem writing to dataset 'Models' in {}".format(project_path)
 
-    assert hdfs.exists(project_path + "Models"), "Your project is missing a dataset named Models, please create it."
-
-    if not hdfs.exists(model_path) and not os.path.exists(model_path):
-        raise ValueError("the provided model_path: {} , does not exist in HDFS or on the local filesystem".format(
-            model_path))
+    if not hdfs.exists(hdfs_model_path) and not os.path.exists(local_model_path):
+        raise ValueError("the provided model_path does not exist in HDFS {} or on the local filesystem {}".format(
+            hdfs_model_path, local_model_path))
 
     # make sure metrics are numbers
     if metrics:
@@ -203,7 +208,7 @@ def export(model_path, model_name, model_version=None, overwrite=False, metrics=
        hdfs.delete(model_version_dir_hdfs, recursive=True)
        hdfs.mkdir(model_version_dir_hdfs)
 
-    # At this point we can create the version directory if it does not exists
+    # At this point we can create the version directory if it does not exist
     if not hdfs.exists(model_version_dir_hdfs):
        hdfs.mkdir(model_version_dir_hdfs)
 
@@ -228,12 +233,12 @@ def export(model_path, model_name, model_version=None, overwrite=False, metrics=
     'experimentId': None, 'description': description, 'jobName': jobName, 'kernelId': kernelId}
     if 'ML_ID' in os.environ:
         # Attach link from experiment to model
-        experiment_utils._attach_model_link_xattr(os.environ['ML_ID'], model_name + '_' + str(model_version))
+        experiment_utils._attach_model_link_xattr(os.environ['ML_ID'], model_name + '_' + str(model_version), project=project)
         # Attach model metadata to models version folder
         model_summary['experimentId'] = os.environ['ML_ID']
-        experiment_utils._attach_model_xattr(model_name + "_" + str(model_version), experiment_utils.dumps(model_summary))
+        experiment_utils._attach_model_xattr(model_name + "_" + str(model_version), experiment_utils.dumps(model_summary), project=project)
     else:
-        experiment_utils._attach_model_xattr(model_name + "_" + str(model_version), experiment_utils.dumps(model_summary))
+        experiment_utils._attach_model_xattr(model_name + "_" + str(model_version), experiment_utils.dumps(model_summary), project=project)
 
     # Model metadata is attached asynchronously by Epipe, therefore this necessary to ensure following steps in a pipeline will not fail
     if synchronous:

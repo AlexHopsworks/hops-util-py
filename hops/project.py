@@ -125,6 +125,6 @@ def get_project_info_as_shared(project):
     return util.http(constants.DELIMITERS.SLASH_DELIMITER +
                      constants.REST_CONFIG.HOPSWORKS_REST_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER +
                      constants.REST_CONFIG.HOPSWORKS_PROJECT_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER +
-                     constants.REST_CONFIG.HOPSWORKS_PROJECT_AS_SHARED + constants.DELIMITERS.SLASH_DELIMITER +
+                     constants.REST_CONFIG.HOPSWORKS_AS_SHARED + constants.DELIMITERS.SLASH_DELIMITER +
                      constants.REST_CONFIG.HOPSWORKS_PROJECT_INFO_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER +
                      project)

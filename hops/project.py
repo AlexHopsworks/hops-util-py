@@ -106,3 +106,25 @@ def get_project_info(project):
                      constants.REST_CONFIG.HOPSWORKS_PROJECT_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER +
                      constants.REST_CONFIG.HOPSWORKS_PROJECT_INFO_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER +
                      project)
+
+def get_project_info_as_shared(project):
+    """
+    Makes a REST call to hopsworks to get all metadata of a project for the provided project.
+
+    Args:
+        :project: the name of the project
+
+    Returns:
+        JSON response
+        See https://github.com/logicalclocks/hopsworks-ee/blob/master/hopsworks-common/src/main/java/io/hops/hopsworks/common/project/ProjectDTO.java
+
+    Raises:
+        :RestAPIError: if there was an error in the REST call to Hopsworks
+    """
+    
+    return util.http(constants.DELIMITERS.SLASH_DELIMITER +
+                     constants.REST_CONFIG.HOPSWORKS_REST_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER +
+                     constants.REST_CONFIG.HOPSWORKS_PROJECT_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER +
+                     constants.REST_CONFIG.HOPSWORKS_PROJECT_AS_SHARED + constants.DELIMITERS.SLASH_DELIMITER +
+                     constants.REST_CONFIG.HOPSWORKS_PROJECT_INFO_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER +
+                     project)

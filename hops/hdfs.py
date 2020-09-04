@@ -90,7 +90,7 @@ def project_id(name=None):
     if not name:
         return os.environ[constants.ENV_VARIABLES.HOPSWORKS_PROJECT_ID_ENV_VAR]
 
-    project_info = project.get_project_info(name)
+    project_info = project.get_project_info_as_shared(name)
     return str(project_info['projectId'])
 
 

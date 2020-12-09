@@ -1357,6 +1357,20 @@ def _do_get_redshift_featuregroup(storage_connector_name, query, featurestore_me
                                                                "connectors for importation are: " \
                                                                .format(storage_connector.type))
 
+def _do_add_dataset_tag(datasetName, tag, value):
+    """
+    Attach a tag to a featuregroup or training dataset
+
+    Args:
+        :datasetName: the name of the dataset
+        :tag: the name of the tag
+        :value: the value of the tag
+
+    Returns:
+          None
+    """
+
+    rest_rpc._add_dataset_tag(datasetName, tag, value)
 
 def _do_add_tag(name, tag, value, featurestore, version, resource):
     """
@@ -1382,6 +1396,28 @@ def _do_add_tag(name, tag, value, featurestore, version, resource):
 
     rest_rpc._add_tag(featurestore_id, id, tag, value, resource)
 
+def _do_get_dataset_tags(datasetName):
+    """
+    Get the tags attached to a training dataset
+
+    Args:
+        :datasetName: the name of the dataset
+
+    Returns:
+          A dictionary containing the tags attached to the dataset
+    """
+    return rest_rpc._get_dataset_tags(datasetName)
+
+def _do_get_dataset_tag(datasetName, tagName):
+    """
+    Get the tags attached to a training dataset
+
+    Args:
+        :datasetName: the name of the dataset
+        :tagName: the name of the tag
+
+    """
+    return rest_rpc._get_dataset_tag(datasetName, tagName)
 
 def _do_get_tags(name, featurestore, version, resource):
     """
@@ -1404,6 +1440,18 @@ def _do_get_tags(name, featurestore, version, resource):
 
     return rest_rpc._get_tags(featurestore_id, id, resource)
 
+def _do_remove_dataset_tag(datasetName, tag):
+    """
+    Remove a tag attached to a dataset
+
+    Args:
+        :datasetName: the name of the dataset
+        :tag: name of tag to remove
+
+    Returns:
+          None
+    """
+    rest_rpc._remove_dataset_tag(datasetName, tag)
 
 def _do_remove_tag(name, tag, featurestore, version, resource):
     """
@@ -1437,6 +1485,21 @@ def _do_get_fs_tags():
     """
 
     return rest_rpc._get_fs_tags()
+
+def _do_get_fs_tag(tagName):
+    """
+    Get tag schema that can be attached to a featuregroup or training dataset
+
+    """
+
+    return rest_rpc._get_fs_tag(tagName)
+
+def _do_post_fs_tag(schemaName, schemaValue):
+    """
+    Create schema for tags that can be attached to a featuregroup or training dataset
+    """
+
+    return rest_rpc._post_fs_tag(schemaName, schemaValue)
 
 
 # Fetch on-load and cache it on the client

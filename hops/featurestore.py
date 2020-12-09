@@ -2363,16 +2363,33 @@ def disable_featuregroup_online(featuregroup_name, featuregroup_version=1, featu
     fs_utils._log("Online Feature Serving disabled successfully for featuregroup: {}".format(featuregroup_name))
 
 
-def set_featuregroup_tag(name, tag, value=None, version=1, featurestore=None):
+def set_dataset_tag(datasetName, tag, value):
+    """
+    Attach tag to a dataset
+
+    Example usage:
+
+    Args:
+        :datasetName: name of the dataset
+        :tag: name of the tag
+        :value: value of the tag
+
+    Returns:
+        None
+    """
+
+    core._do_add_dataset_tag(datasetName, tag, value)
+
+
+def set_featuregroup_tag(name, tag, value, version=1, featurestore=None):
     """
     Attach tag to a feature group
 
     Example usage:
 
     >>> # The API will default to the project's feature store
-    >>> featurestore.set_featuregroup_tag(featuregroup_name, "SPORT")
     >>> # You can also explicitly override the default arguments:
-    >>> featurestore.set_featuregroup_tag(featuregroup_name, "SPORT", value="Football", version=1, featurestore=featurestore)
+    >>> featurestore.set_featuregroup_tag(featuregroup_name, "SPORT", "Football", version=1, featurestore=featurestore)
 
     Args:
         :name: name of the featuregroup
@@ -2387,6 +2404,32 @@ def set_featuregroup_tag(name, tag, value=None, version=1, featurestore=None):
 
     core._do_add_tag(name, tag, value, featurestore, version, constants.REST_CONFIG.HOPSWORKS_FEATUREGROUPS_RESOURCE)
 
+def get_dataset_tags(datasetName):
+    """
+    Get all tags attached to a dataset
+
+    Args:
+        :datasetName: name of the dataset
+
+    Returns:
+        The tags dictionary attached to the dataset
+    """
+
+    return core._do_get_dataset_tags(datasetName)
+
+def get_dataset_tag(datasetName, tagName):
+    """
+    Get all tags attached to a dataset
+
+    Args:
+        :datasetName: name of the dataset
+        :tagName: name of the dataset
+
+    Returns:
+        The tags dictionary attached to the dataset
+    """
+
+    return core._do_get_dataset_tag(datasetName, tagName)
 
 def get_featuregroup_tags(name, version=1, featurestore=None):
     """
@@ -2409,6 +2452,20 @@ def get_featuregroup_tags(name, version=1, featurestore=None):
     """
 
     return core._do_get_tags(name, featurestore, version, constants.REST_CONFIG.HOPSWORKS_FEATUREGROUPS_RESOURCE)
+
+def remove_dataset_tag(datasetName, tag):
+    """
+    Removes all tags attached to a dataset
+
+    Args:
+        :datasetName: name of the dataset
+        :tag: name of the tag to remove from the featuregroup
+
+    Returns:
+        None
+    """
+
+    core._do_remove_dataset_tag(datasetName, tag)
 
 
 def remove_featuregroup_tag(name, tag, version=1, featurestore=None):
@@ -2435,16 +2492,15 @@ def remove_featuregroup_tag(name, tag, version=1, featurestore=None):
     core._do_remove_tag(name, tag, featurestore, version, constants.REST_CONFIG.HOPSWORKS_FEATUREGROUPS_RESOURCE)
 
 
-def set_training_dataset_tag(name, tag, value=None, version=1, featurestore=None):
+def set_training_dataset_tag(name, tag, value, version=1, featurestore=None):
     """
     Attach tag to a training dataset
 
     Example usage:
 
     >>> # The API will default to the project's feature store
-    >>> featurestore.set_training_dataset_tag(training_dataset_name, "SPORT")
     >>> # You can also explicitly override the default arguments:
-    >>> featurestore.set_training_dataset_tag(training_dataset_name, "SPORT", value="Football", version=1, featurestore=featurestore)
+    >>> featurestore.set_training_dataset_tag(training_dataset_name, "SPORT", "Football", version=1, featurestore=featurestore)
 
     Args:
         :name: name of the training dataset
@@ -2507,16 +2563,24 @@ def remove_training_dataset_tag(name, tag, version=1, featurestore=None):
     core._do_remove_tag(name, tag, featurestore, version, constants.REST_CONFIG.HOPSWORKS_TRAININGDATASETS_RESOURCE)
 
 
-def get_tags():
+def get_schemas():
     """
     Get tags that can be attached to a featuregroup or training dataset
-
-    Example usage:
-
-    >>> tags = featurestore.get_tags()
-
-    Returns:
-        List of tags
     """
 
     return core._do_get_fs_tags()
+
+def get_schema(schemaName):
+    """
+    Get tag schema that can be attached to a featuregroup or training dataset
+    """
+
+    return core._do_get_fs_tag(schemaName)
+
+def create_schema(schemaName, schemaVal):
+    """
+    Post tag schemas that can be attached to a featuregroup or training dataset
+
+    """
+
+    return core._do_post_fs_tag(schemaName, schemaVal)

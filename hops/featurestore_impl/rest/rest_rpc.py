@@ -818,7 +818,6 @@ def _get_dataset_tags(datasetName):
         for tag in response_object["items"]:
             if ("name" in tag) and ("value" in tag) :
                 tags[tag["name"]] = tag["value"]
-
     return tags
 
 def _get_dataset_tag(datasetName, tagName):
@@ -849,10 +848,12 @@ def _get_dataset_tag(datasetName, tagName):
                            "HTTP code: {}, HTTP reason: {}, error code: {}, error msg: {}, user msg: {}".format(
             resource_url, response.status_code, response.reason, error_code, error_msg, user_msg))
 
-    tag = {}
-    if ("name" in response_object) and ("value" in response_object) :
-        tag[response_object["name"]] = response_object["value"]
-    return tag
+    tags = {}
+    if "items" in response_object:
+        for tag in response_object["items"]:
+            if ("name" in tag) and ("value" in tag) :
+                tags[tag["name"]] = tag["value"]
+    return tags
 
 def _get_tags(featurestore_id, id, resource):
     """
